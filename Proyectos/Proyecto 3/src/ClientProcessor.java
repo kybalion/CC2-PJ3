@@ -42,11 +42,6 @@ public class ClientProcessor {
 		}
 	}
 	
-	public String newContact(String contact) {
-		
-		return null;
-	}
-	
 	public void send(String message) {
 		out.println(message);
 	}

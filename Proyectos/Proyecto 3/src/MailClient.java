@@ -1,4 +1,5 @@
 import java.net.*;
+import java.text.SimpleDateFormat;
 import java.util.Hashtable;
 import java.io.*;
 
@@ -13,14 +14,21 @@ public class MailClient{
 	public static void main(String[] args) throws UnknownHostException, IOException{
 		String reply;
 		connectToMailServer();
-		if(!logged){
+		/*if(!logged){
 			login();
 		}
 		out.println("CLIST username");
 		while ((reply = in.readLine()) != null){
 			System.out.println(reply);
 			if (reply.contains("*")) break;
-		}
+		}*/
+		/*out.println("SEND MAIL daniel@the.lord.of.the.mails.com");
+		out.println("MAIL FROM alejandro@the.fellowship.of.mails.com");
+		out.println("MAIL SUBJECT test");
+		out.println("MAIL BODY estoesunaprueba");
+		out.println("END SEND MAIL");*/
+		out.println("CHECK CONTACT danie@the.lord.of.the.mails.com");
+		System.out.println(in.readLine());
 		in.close();
 		out.close();
 	}
@@ -50,7 +58,7 @@ public class MailClient{
 	}
 	
 	public static void connectToMailServer() throws UnknownHostException, IOException{
-		serverSocket = new Socket("192.168.1.100", 1400);
+		serverSocket = new Socket("192.168.1.100", 1500);
 		in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
 		out = new PrintWriter(serverSocket.getOutputStream(),true);
 	}
