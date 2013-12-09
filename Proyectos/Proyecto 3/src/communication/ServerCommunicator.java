@@ -1,3 +1,4 @@
+package communication;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -46,10 +47,10 @@ public class ServerCommunicator extends Thread {
 					mailBody = message;
 					break;
 				case "END SEND MAIL":
-					sp.send(dataProvider.ServerIncommingEmail(mailTo, mailFrom, mailSubject, mailBody));
+					sp.send(dataProvider.serverIncommingEmail(mailTo, mailFrom, mailSubject, mailBody));
 					break;
 				case "CHECK CONTACT":
-					sp.send(dataProvider.ServerCheckContact(message));
+					sp.send(dataProvider.serverCheckContact(message));
 					break;
 				case "SEND ERROR 202":
 					sp.send("SEND ERROR 202");

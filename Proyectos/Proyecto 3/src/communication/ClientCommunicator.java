@@ -1,3 +1,4 @@
+package communication;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -46,7 +47,7 @@ public class ClientCommunicator extends Thread {
 					break;
 					
 				case "NEWCONT":
-					cp.send(dataProvider.);
+					cp.send(dataProvider.checkContact(message));
 					break;
 				
 				case "SEND MAIL":

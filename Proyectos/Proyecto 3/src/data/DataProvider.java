@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import entities.IncomingEmail;
 import entities.User;
+import communication.ServerRequestor;
 
 public class DataProvider {
 	private static final String USER_LOGIN = "SELECT ID, USERNAME, PASSWORD FROM USERS WHERE USERNAME =";
@@ -94,7 +95,7 @@ public class DataProvider {
     	return null;
     }
 	
-	public String ServerIncommingEmail(String mailTo, String mailFrom, String mailSubject, String mailBody) {
+	public String serverIncommingEmail(String mailTo, String mailFrom, String mailSubject, String mailBody) {
 		String[] to = mailTo.split(" ");
 		String[] from = mailFrom.split(" ");
 		String[] subject = mailSubject.split(" ");
@@ -108,7 +109,6 @@ public class DataProvider {
 				connection.connect();
 				System.out.println(INSERT_MAIL+"('"+newEmail.getBody()+"','"+newEmail.getSubject()+"','"+newEmail.getSentBy()+"',"+newEmail.getRead()+",'"+newEmail.getReceivedOn()+"',"+newEmail.getToUserID()+")");
 				connection.executeNonQuery(INSERT_MAIL+"('"+newEmail.getBody()+"','"+newEmail.getSubject()+"','"+newEmail.getSentBy()+"',"+newEmail.getRead()+",'"+newEmail.getReceivedOn()+"',"+newEmail.getToUserID()+")");
-				connection.close();
 				return "OK SEND MAIL";
 			}
 		} catch (Exception e) {
@@ -124,16 +124,11 @@ public class DataProvider {
 		return "SEND ERROR 201 "+to[2];
 	}
 	
-	public String ServerCheckContact(String message) {
-		String[] data = message.split(" ");
-		
+	public boolean existContact(String contact) {
 		try {
 			connection.connect();
-			connection.executeQuery(CHECK_CONTACT + "'" + data[2] + "'");
-			if(connection.next()){
-				return "OK CHECK CONTACT " + connection.getString("USERNAME");
-			}
-			connection.close();
+			connection.executeQuery(CHECK_CONTACT + "'" + contact + "'");
+			return connection.next(); 
 		} catch (Exception e) {
 			System.out.println(e);
 			System.out.println("Ocurrio un error al tratar de conectarse.");
@@ -144,6 +139,21 @@ public class DataProvider {
 				e.printStackTrace();
 			}
 		}
-		return "CHECK ERROR 205";
+		return false;
+	}
+	
+	public String serverCheckContact(String message) { 
+		String[] data = message.split(" ");
+		return existContact(data[2])? "OK CHECK CONTACT " + data[2] : "CHECK ERROR 205";
+	}
+	
+	public String checkContact(String message) {
+		String[] data = message.split(" ");
+		if (existContact(data[2])) {
+			return "OK NEWCONT";
+		} else if (data) {
+			return "OK NEWCONT";
+		}
+		return "NEWCONT ERROR " + data[2];
 	}
 }
