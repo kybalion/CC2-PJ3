@@ -6,14 +6,14 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
 
-public class DNSCommunicator{
+public class DNSCommunicator {
 	String serverName, serverIP, dnsIP;
 	int dnsPort;
 	static Socket dnsSocket;
 	static BufferedReader in;
 	static PrintWriter out;
 
-	public DNSCommunicator(String name, String ip, String dns, int port){
+	public DNSCommunicator(String name, String ip, String dns, int port) {
 		this.serverName = name;
 		this.serverIP = ip;
 		this.dnsIP = dns;
@@ -27,34 +27,31 @@ public class DNSCommunicator{
 		}
 	}
 	
-	public void sendOnline() throws IOException{
+	public void sendOnline() throws IOException {
 		out.println("ONLINE "+this.serverName+" "+this.serverIP);
 		String reply = in.readLine();
 		System.out.println(reply);
-		
 	}
 	
-	public void sendOffline() throws IOException{
-		out.println("OFFLINE "+this.serverName);
+	public void sendOffline() throws IOException {
+		out.println("OFFLINE " + this.serverName);
 		String reply = in.readLine();
 		System.out.println(reply);
-		
 	}
 	
-	public void getIPTable() throws IOException{
+	public void getIPTable() throws IOException {
 		String reply = "";
 		int regs = 0;
 		String[] args;
 		out.println("GETIPTABLE");
-		while ((reply = in.readLine()) != null){
-			if(reply.contains("OK IPTABLE")){
+		while ((reply = in.readLine()) != null) {
+			if (reply.contains("OK IPTABLE")) {
 				regs++;
 				if (regs == 1) MailServer.serversIPTable = new Hashtable<String,String>();
 				args = reply.split(" ");
 				MailServer.serversIPTable.put(args[2], args[3]);
 				if (reply.contains("*")) break;
-			}
-			else{
+			} else {
 				System.out.println(reply);
 			}
 		}

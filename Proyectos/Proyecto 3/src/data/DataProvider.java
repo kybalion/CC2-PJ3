@@ -11,8 +11,8 @@ public class DataProvider {
 	private static final String USER_LOGIN = "SELECT ID, USERNAME, PASSWORD FROM USERS WHERE USERNAME =";
 	private static final String USER_CONTACTS = "SELECT USERNAME FROM CONTACTS WHERE USER_ID = ";
   	private static final String USER_MAILS = "SELECT SUBJECT, BODY, SENTBY FROM EMAILS WHERE READ = 0 AND TO_USER_ID = ";
-	private static final String CHECK_CONTACT = "SELECT ID,USERNAME FROM USERS WHERE USERNAME =";
-    private static final String INSERT_MAIL = "INSERT INTO IncomingMails (Body,Subject,From_Username,Read,Received_On,to_user_id) VALUES ";
+	private static final String CHECK_CONTACT = "SELECT ID, USERNAME FROM USERS WHERE USERNAME = ";
+    private static final String INSERT_MAIL = "INSERT INTO INCOMINGMAILS (BODY, SUBJECT, FROM_USERNAME, READ, RECEIVED_ON, TO_USER_ID) VALUES ";
     
     DB connection;
     User connectedUser;
@@ -129,9 +129,9 @@ public class DataProvider {
 		
 		try {
 			connection.connect();
-			connection.executeQuery(CHECK_CONTACT+"'"+data[2]+"'");
+			connection.executeQuery(CHECK_CONTACT + "'" + data[2] + "'");
 			if(connection.next()){
-				return "OK CHECK CONTACT "+connection.getString("USERNAME");
+				return "OK CHECK CONTACT " + connection.getString("USERNAME");
 			}
 			connection.close();
 		} catch (Exception e) {

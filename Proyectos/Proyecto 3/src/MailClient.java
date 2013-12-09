@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
 
-public class MailClient{
+public class MailClient {
 	static Socket serverSocket;
 	static BufferedReader in;
 	static PrintWriter out;
@@ -14,7 +14,7 @@ public class MailClient{
 	static BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
 	static Hashtable<String,String> errors = new Hashtable<String,String>(); 
 	
-	public static void main(String[] args) throws UnknownHostException, IOException{
+	public static void main(String[] args) throws UnknownHostException, IOException {
 		connectToMailServer();
 		/*if(!logged){
 			login();
@@ -35,7 +35,7 @@ public class MailClient{
 		out.close();
 	}
 	
-	public static void login() throws IOException{
+	public static void login() throws IOException {
 		initializateErrorsTable();
 		String username,password;
 		System.out.print("Ingrese el usuario: ");
@@ -45,7 +45,7 @@ public class MailClient{
 		out.println("LOGIN "+username+" "+password);
 	}
 	
-	public static void initializateErrorsTable(){
+	public static void initializateErrorsTable() {
 		errors.put("LOGIN ERROR 101", "unknown user");
 		errors.put("LOGIN ERROR 102", "invalid password");
 		errors.put("CLIST ERROR 103", "no contacts found");
@@ -59,7 +59,7 @@ public class MailClient{
 		errors.put("LOGIN ERROR 101", "unknown user");
 	}
 	
-	public static void connectToMailServer() throws UnknownHostException, IOException{
+	public static void connectToMailServer() throws UnknownHostException, IOException {
 		serverSocket = new Socket("192.168.1.100", 1500);
 		in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
 		out = new PrintWriter(serverSocket.getOutputStream(),true);

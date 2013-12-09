@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import data.DataProvider;
+import entities.IncomingEmail;
 
 public class ClientCommunicator extends Thread {
     private Socket socket = null;
@@ -27,6 +28,7 @@ public class ClientCommunicator extends Thread {
     
     private void attendClient(ClientProcessor cp) {
     	DataProvider dataProvider = new DataProvider();
+    	IncomingEmail email;
     	while(cp.hasMessages()) {
 			String message = cp.getMessage();
 			System.out.println("Mensaje Recibido: " + message);
@@ -42,13 +44,26 @@ public class ClientCommunicator extends Thread {
 				case "GETNEWMAILS": 
 					cp.sendMails(dataProvider.getEmails());
 					break;
-				
+					
 				case "NEWCONT":
-
+					cp.send(dataProvider.);
 					break;
 				
-				case "SENDMAIL":
-					
+				case "SEND MAIL":
+					mailTo = ""; mailFrom =""; mailSubject = ""; mailBody="";
+					mailTo = message;
+					break;
+				case "MAIL FROM":
+					mailFrom = message;
+					break;
+				case "MAIL SUBJECT":
+					mailSubject = message;
+					break;
+				case "MAIL BODY":
+					mailBody = message;
+					break;
+				case "END SEND MAIL":
+					cp.send(dataProvider.ServerIncommingEmail(mailTo, mailFrom, mailSubject, mailBody));
 					break;
 					
 				default:
@@ -68,6 +83,18 @@ public class ClientCommunicator extends Thread {
 			return "GETNEWMAILS";
 		} else if (message.matches("^NEWCONT .*")) {
 			return "NEWCONT";
+		} else if(message.matches("(?i)^SEND MAIL [_a-z0-9-]+(\\.[_a-z0-9-]+)*@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,4})")) {
+			return "SEND MAIL";
+		} else if(message.matches("(?i)^MAIL FROM [_a-z0-9-]+(\\.[_a-z0-9-]+)*@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,4})")) {
+			return "MAIL FROM";
+		} else if(message.matches("(?i)^MAIL SUBJECT \".*\"")) {
+			return "MAIL SUBJECT";
+		} else if(message.matches("(?i)^MAIL BODY \".*\"")) {
+			return "MAIL BODY";
+		} else if(message.matches("(?i)^END SEND MAIL")) {
+			return "END SEND MAIL";
+		} else if(message.matches("(?i)^CHECK CONTACT [_a-z0-9-]+(\\.[_a-z0-9-]+)*@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,4})")) {
+			return "CHECK CONTACT";
 		}
 		return message;
 	}
