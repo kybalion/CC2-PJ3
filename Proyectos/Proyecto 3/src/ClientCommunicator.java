@@ -42,6 +42,15 @@ public class ClientCommunicator extends Thread {
 				case "GETNEWMAILS": 
 					cp.sendMails(dataProvider.getEmails());
 					break;
+				
+				case "NEWCONT":
+
+					break;
+				
+				case "SENDMAIL":
+					
+					break;
+					
 				default:
 					cp.send("INVALID COMMAND ERROR");
 					break;
@@ -57,7 +66,9 @@ public class ClientCommunicator extends Thread {
 			return "CLIST";
 		} else if (message.matches("^GETNEWMAILS .*")) {
 			return "GETNEWMAILS";
+		} else if (message.matches("^NEWCONT .*")) {
+			return "NEWCONT";
 		}
-		return "INVALID COMMAND ERROR";
+		return message;
 	}
 }
