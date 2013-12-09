@@ -3,7 +3,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Stack;
 
-import entities.Email;
+import entities.IncomingEmail;
 
 
 public class ClientProcessor {
@@ -17,10 +17,10 @@ public class ClientProcessor {
 		this.in = in;
 	}
 	
-	public void sendMails(Stack<Email> emails) {
+	public void sendMails(Stack<IncomingEmail> emails) {
 		if (!emails.isEmpty()) {
 			while (!emails.isEmpty()) {
-				Email email = emails.pop();
+				IncomingEmail email = emails.pop();
 				out.println("OK GETNEWMAILS " + email.getSentBy() + 
 							" " + email.getSubject() + 
 							" " + email.getBody() + 

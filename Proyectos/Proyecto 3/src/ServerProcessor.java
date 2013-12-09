@@ -3,8 +3,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Stack;
 
-import entities.Email;
-
 
 public class ServerProcessor {
 	Stack<String> messages = new Stack<String>();

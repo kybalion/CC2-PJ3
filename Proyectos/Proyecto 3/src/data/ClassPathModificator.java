@@ -1,13 +1,15 @@
+package data;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-
 public class ClassPathModificator {
-   private static final Class[] urlParams =
-       new Class[]{URL.class};
+   @SuppressWarnings("rawtypes")
+   private static final Class[] urlParams = new Class[]{URL.class};
+   
    public static void appendPath(URL newURL) throws
        IOException {
        URLClassLoader classLoader = (URLClassLoader)

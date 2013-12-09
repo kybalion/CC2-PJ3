@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import data.DataProvider;
-import entities.Email;
 
 public class ServerCommunicator extends Thread {
     private Socket socket = null;

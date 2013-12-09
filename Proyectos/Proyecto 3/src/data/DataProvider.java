@@ -6,11 +6,10 @@ import java.util.Stack;
 
 import entities.IncomingEmail;
 import entities.User;
-import entities.Email;
 
 public class DataProvider {
 	private static final String USER_LOGIN = "SELECT ID, USERNAME, PASSWORD FROM USERS WHERE USERNAME =";
-  private static final String USER_CONTACTS = "SELECT USERNAME FROM CONTACTS WHERE USER_ID = ";
+	private static final String USER_CONTACTS = "SELECT USERNAME FROM CONTACTS WHERE USER_ID = ";
   	private static final String USER_MAILS = "SELECT SUBJECT, BODY, SENTBY FROM EMAILS WHERE READ = 0 AND TO_USER_ID = ";
 	private static final String CHECK_CONTACT = "SELECT ID,USERNAME FROM USERS WHERE USERNAME =";
     private static final String INSERT_MAIL = "INSERT INTO IncomingMails (Body,Subject,From_Username,Read,Received_On,to_user_id) VALUES ";
@@ -68,19 +67,19 @@ public class DataProvider {
     	return null;
     }
 	
-	public Stack<Email> getEmails() {
+	public Stack<IncomingEmail> getEmails() {
     	try {
 			connection.connect();
 			connection.executeQuery(USER_MAILS + connectedUser.getID());
-			Stack<Email> emails = new Stack<Email>();
+			Stack<IncomingEmail> emails = new Stack<IncomingEmail>();
 			if (connection.getString("USERNAME") != null) {
-				Email email = new Email((String) connection.getString("USERNAME"),
+				IncomingEmail email = new IncomingEmail((String) connection.getString("USERNAME"),
 						(String) connection.getString("USERNAME"),
 						(String) connection.getString("USERNAME"),
 						connectedUser.getID());
 				emails.push(email);
 				while (connection.next()) {
-					email = new Email((String) connection.getString("USERNAME"),
+					email = new IncomingEmail((String) connection.getString("USERNAME"),
 							(String) connection.getString("USERNAME"),
 							(String) connection.getString("USERNAME"),
 							connectedUser.getID());
