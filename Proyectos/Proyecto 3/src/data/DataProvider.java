@@ -73,19 +73,13 @@ public class DataProvider {
 			connection.connect();
 			connection.executeQuery(USER_MAILS + connectedUser.getID());
 			Stack<IncomingEmail> emails = new Stack<IncomingEmail>();
-			if (connection.getString("USERNAME") != null) {
-				IncomingEmail email = new IncomingEmail((String) connection.getString("USERNAME"),
-						(String) connection.getString("USERNAME"),
-						(String) connection.getString("USERNAME"),
+
+			while (connection.next()) {
+				IncomingEmail email = new IncomingEmail((String) connection.getString("subject"),
+						(String) connection.getString("body"),
+						(String) connection.getString("from_username"),
 						connectedUser.getID());
 				emails.push(email);
-				while (connection.next()) {
-					email = new IncomingEmail((String) connection.getString("USERNAME"),
-							(String) connection.getString("USERNAME"),
-							(String) connection.getString("USERNAME"),
-							connectedUser.getID());
-					emails.push(email);
-				}
 			}
 			connection.close();
 			return emails;
