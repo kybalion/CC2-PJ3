@@ -17,7 +17,7 @@ public class ClientCommunicator extends Thread {
         super("ClientCommunicator");
         this.socket = socket;
     }
-    
+    //comentario
     public void run() {
         System.out.println("Conexion establecida con cliente " + this.socket.getRemoteSocketAddress());
         try {
