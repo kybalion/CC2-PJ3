@@ -161,4 +161,16 @@ public class DataProvider {
 		}
 		return "NEWCONT ERROR " + data[2];
 	}
+	
+	public boolean insertNewUser(String username, String password) throws Exception
+    {
+        connection.connect();
+        connection.executeQuery(USER_LOGIN +"'"+ username.toLowerCase()+"'");
+        if(connection.next())
+        {
+            throw new Exception("Ya existe el usuario que desea agregar");
+        }
+        return connection.executeNonQuery("INSERT INTO users values (NULL, '"+username.toLowerCase()+"', '"+ password.toLowerCase() +"');");
+        
+    }
 }
