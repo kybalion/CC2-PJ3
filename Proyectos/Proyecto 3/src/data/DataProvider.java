@@ -73,19 +73,13 @@ public class DataProvider {
 			connection.connect();
 			connection.executeQuery(USER_MAILS + connectedUser.getID());
 			Stack<IncomingEmail> emails = new Stack<IncomingEmail>();
-			if (connection.getString("USERNAME") != null) {
-				IncomingEmail email = new IncomingEmail((String) connection.getString("USERNAME"),
-						(String) connection.getString("USERNAME"),
-						(String) connection.getString("USERNAME"),
+
+			while (connection.next()) {
+				IncomingEmail email = new IncomingEmail((String) connection.getString("subject"),
+						(String) connection.getString("body"),
+						(String) connection.getString("from_username"),
 						connectedUser.getID());
 				emails.push(email);
-				while (connection.next()) {
-					email = new IncomingEmail((String) connection.getString("USERNAME"),
-							(String) connection.getString("USERNAME"),
-							(String) connection.getString("USERNAME"),
-							connectedUser.getID());
-					emails.push(email);
-				}
 			}
 			connection.close();
 			return emails;
@@ -95,20 +89,31 @@ public class DataProvider {
     	return null;
     }
 	
-	public String serverIncommingEmail(String mailTo, String mailFrom, String mailSubject, String mailBody) {
+		public String ServerIncommingEmail(String mailTo, String mailFrom, String mailSubject, String mailBody) {
 		String[] to = mailTo.split(" ");
 		String[] from = mailFrom.split(" ");
-		String[] subject = mailSubject.split(" ");
-		String[] body = mailBody.split(" ");
+		Pattern patronSubject = Pattern.compile("^MAIL SUBJECT \"(.*)\"");
+		Matcher subjectMatcher = patronSubject.matcher(mailSubject);
+		subjectMatcher.find();
+		Pattern patronBody = Pattern.compile("^MAIL BODY \"(.*)\"");
+		Matcher bodyMatcher = patronBody.matcher(mailBody);
+		bodyMatcher.find();
+		
+		if(subjectMatcher.group(1).equals("")){
+			return "SEND ERROR 203";
+		}
+		if(bodyMatcher.group(1).equals("")){
+			return "SEND ERROR 204";
+		}
 		try {
 			connection.connect();
-			connection.executeQuery(CHECK_CONTACT+"'"+to[2]+"'");
+			connection.executeQuery(CHECK_CONTACT+"'"+to[2].toLowerCase()+"'");
 			if(connection.next()){
-				IncomingEmail newEmail = new IncomingEmail (subject[2],body[2],from[2],(long)(Integer.parseInt((String) connection.getString("ID"))));
+				IncomingEmail newEmail = new IncomingEmail (subjectMatcher.group(1),bodyMatcher.group(1),from[2].toLowerCase(),(long)(Integer.parseInt((String) connection.getString("ID"))));
 				connection.close();
 				connection.connect();
-				System.out.println(INSERT_MAIL+"('"+newEmail.getBody()+"','"+newEmail.getSubject()+"','"+newEmail.getSentBy()+"',"+newEmail.getRead()+",'"+newEmail.getReceivedOn()+"',"+newEmail.getToUserID()+")");
 				connection.executeNonQuery(INSERT_MAIL+"('"+newEmail.getBody()+"','"+newEmail.getSubject()+"','"+newEmail.getSentBy()+"',"+newEmail.getRead()+",'"+newEmail.getReceivedOn()+"',"+newEmail.getToUserID()+")");
+				connection.close();
 				return "OK SEND MAIL";
 			}
 		} catch (Exception e) {
@@ -156,4 +161,16 @@ public class DataProvider {
 		}
 		return "NEWCONT ERROR " + data[2];
 	}
+	
+	public boolean insertNewUser(String username, String password) throws Exception
+    {
+        connection.connect();
+        connection.executeQuery(USER_LOGIN +"'"+ username.toLowerCase()+"'");
+        if(connection.next())
+        {
+            throw new Exception("Ya existe el usuario que desea agregar");
+        }
+        return connection.executeNonQuery("INSERT INTO users values (NULL, '"+username.toLowerCase()+"', '"+ password.toLowerCase() +"');");
+        
+    }
 }

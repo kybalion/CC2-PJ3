@@ -23,8 +23,8 @@ public class ClientProcessor {
 			while (!emails.isEmpty()) {
 				IncomingEmail email = emails.pop();
 				out.println("OK GETNEWMAILS " + email.getSentBy() + 
-							" " + email.getSubject() + 
-							" " + email.getBody() + 
+							" \"" + email.getSubject() + 
+							"\" \"" + email.getBody() +" \" "+ 
 							(emails.isEmpty()? " *" : ""));
 			}
 		} else {
