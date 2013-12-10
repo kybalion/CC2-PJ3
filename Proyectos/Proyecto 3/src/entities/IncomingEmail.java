@@ -1,3 +1,4 @@
+
 package entities;
 
 import java.text.SimpleDateFormat;
@@ -9,6 +10,7 @@ public class IncomingEmail {
 	private String sentBy;
 	private long sentByID;
 	private long toUserID;
+	private String toUserName;
 	private String receivedOn;
 	private byte read;
 	private Stack<String> recipients = new Stack<String>();
@@ -89,5 +91,17 @@ public class IncomingEmail {
 
 	public void setSentByID(long sentByID) {
 		this.sentByID = sentByID;
+	}
+
+	public String getToUserName() {
+		return toUserName;
+	}
+
+	public void setToUserName(String toUserName) {
+		this.toUserName = toUserName;
+	}
+	
+	public String getNow() {
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date());
 	}
 }

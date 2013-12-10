@@ -15,7 +15,7 @@ import communication.ServerRequestor;
 public class DataProvider {
 	private static final String USER_LOGIN = "SELECT ID, USERNAME, PASSWORD FROM USERS WHERE USERNAME =";
 	private static final String USER_CONTACTS = "SELECT USERNAME FROM CONTACTS WHERE USER_ID = ";
-  	private static final String USER_MAILS = "SELECT SUBJECT, BODY, SENTBY FROM EMAILS WHERE READ = 0 AND TO_USER_ID = ";
+  	private static final String USER_MAILS = "SELECT SUBJECT, BODY, SENTBY FROM INCOMINGMAILS WHERE READ = 0 AND TO_USER_ID = ";
 	private static final String CHECK_CONTACT = "SELECT ID, USERNAME FROM USERS WHERE USERNAME = ";
     private static final String INSERT_MAIL = "INSERT INTO INCOMINGMAILS (BODY, SUBJECT, FROM_USERNAME, READ, RECEIVED_ON, TO_USER_ID) VALUES ";
     
@@ -136,6 +136,8 @@ public class DataProvider {
 	public ConcurrentLinkedQueue<String> sendMail(IncomingEmail email) {
 		ConcurrentLinkedQueue<String> message = new ConcurrentLinkedQueue<String>();
 		
+		email.setSentByID(connectedUser.getID());
+		email.setSentBy(connectedUser.getUserName());
 		if (email.getBody() == null || email.getBody().equals("")) {
 			message.add("SEND ERROR 108");
 		} else if (email.getSubject() == null || email.getSubject().equals("")) {
@@ -146,11 +148,10 @@ public class DataProvider {
 			for (String recipient : email.getRecipients()) {
 				String statusRecipient = checkContact(recipient);
 				if (statusRecipient.equals("OK NEWCONT")) {
-					email.setSentByID(connectedUser.getID());
 					if (existContact(recipient)) {
-						
+						insertMail(email);
 					} else {
-						
+						ServerRequestor.sendMail(email);
 					}
 				} else if (statusRecipient.startsWith("NEWCONT ERROR 110")) {
 					message.add("SEND ERROR 104 " + recipient);
@@ -164,15 +165,36 @@ public class DataProvider {
 		return message;
 	}
 	
-	public void insertMail(IncomingEmail newEmail) {
+	public long getUserID(String userName) {
 		try {
 			connection.connect();
-			connection.executeNonQuery(INSERT_MAIL + "('" + newEmail.getBody() + "','" + 
-															newEmail.getSubject() + "','" + 
-															newEmail.getSentBy() + "'," + 
-															newEmail.getRead() + ",'" + 
-															newEmail.getReceivedOn() + "'," + 
-															newEmail.getToUserID() + ")");
+			connection.executeQuery(CHECK_CONTACT + "'" + userName.toLowerCase() + "'");
+			if (connection.next()) {
+				return Long.parseLong((String) connection.getString("ID"));
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("Ocurrio un error al tratar de conectarse.");
+		} finally {
+			try {
+				connection.close();
+			} catch (UGDBDisconnectException e) {
+				e.printStackTrace();
+			}
+		}
+		return 0;
+	}
+	
+	public void insertMail(IncomingEmail newEmail) {
+		try {
+			newEmail.setToUserID(getUserID(newEmail.getToUserName()));
+			connection.connect();
+			connection.executeNonQuery(INSERT_MAIL + "('" + newEmail.getSubject() + "','" + 
+										newEmail.getBody() + "','" + 
+										newEmail.getSentBy() + "'," + 
+										0 + ",'" + 
+										newEmail.getNow() + "'," + 
+										newEmail.getToUserID() + ")");
 		} catch (Exception e) {
 			System.out.println(e);
 			System.out.println("Ocurrio un error al tratar de conectarse.");

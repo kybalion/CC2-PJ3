@@ -37,12 +37,14 @@ public class ServerRequestor {
 	public static void sendMail(IncomingEmail email) {
 		Socket serverSocket = null;
 		try {
-			serverSocket = new Socket(MailServer.serversIPTable.get(email.get .split("@")[1]), 1500);
-			BufferedReader in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+			serverSocket = new Socket(MailServer.serversIPTable.get(email.getToUserName().split("@")[1]), 1500);
 			PrintWriter out = new PrintWriter(serverSocket.getOutputStream(),true);
 			
-			out.println("CHECK CONTACT " + user);
-			return in.readLine().startsWith("OK CHECK CONTACT");
+			out.println("SEND MAIL " + email.getToUserName());
+			out.println("MAIL FROM " + email.getSentBy());
+			out.println("MAIL SUBJECT " + email.getSubject());
+			out.println("MAIL BODY " + email.getBody());
+			out.println("END MAIL");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -52,7 +54,6 @@ public class ServerRequestor {
 				e.printStackTrace();
 			}
 		}
-		return false;
 	}
 	
 }

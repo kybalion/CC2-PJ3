@@ -3,6 +3,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import entities.IncomingEmail;
 
@@ -47,13 +48,20 @@ public class ClientProcessor {
 		out.println(message);
 	}
 	
+	public void send(ConcurrentLinkedQueue<String> messages) {
+		while (!messages.isEmpty()) {
+			out.println(messages.poll());
+		}
+	}
+	
 	public boolean hasMessages() {
 		String message = null;
 		try {
 			if (messages.isEmpty()) {
 				message = in.readLine();
-				if (message != null)
+				if (message != null) {
 					messages.add(message);
+				}
 			}
 			return messages.isEmpty()? false : true;
 		} catch (IOException e) {

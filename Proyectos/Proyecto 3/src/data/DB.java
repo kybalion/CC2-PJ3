@@ -1,7 +1,9 @@
 package data;
 
-import java.sql.*;
-import java.lang.reflect.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Hashtable;
 /**
 Esta clase implementa una forma facil de crear una conexion a una base de datos sqlite.

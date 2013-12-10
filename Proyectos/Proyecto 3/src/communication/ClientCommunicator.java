@@ -17,7 +17,7 @@ public class ClientCommunicator extends Thread {
         super("ClientCommunicator");
         this.socket = socket;
     }
-    //comentario
+    
     public void run() {
         System.out.println("Conexion establecida con cliente " + this.socket.getRemoteSocketAddress());
         try {
@@ -73,7 +73,7 @@ public class ClientCommunicator extends Thread {
 					break;
 					
 				case "END SEND MAIL":
-//					cp.send(dataProvider.ServerIncommingEmail(mailTo, mailFrom, mailSubject, mailBody));
+					cp.send(dataProvider.sendMail(email));
 					break;
 					
 				default:
