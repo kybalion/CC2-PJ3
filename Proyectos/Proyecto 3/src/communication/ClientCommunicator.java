@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import data.DataProvider;
 import entities.IncomingEmail;
@@ -29,7 +31,7 @@ public class ClientCommunicator extends Thread {
     
     private void attendClient(ClientProcessor cp) {
     	DataProvider dataProvider = new DataProvider();
-    	IncomingEmail email;
+    	IncomingEmail email = new IncomingEmail();
     	while(cp.hasMessages()) {
 			String message = cp.getMessage();
 			System.out.println("Mensaje Recibido: " + message);
@@ -51,20 +53,27 @@ public class ClientCommunicator extends Thread {
 					break;
 				
 				case "SEND MAIL":
-					mailTo = ""; mailFrom =""; mailSubject = ""; mailBody="";
-					mailTo = message;
+					email = new IncomingEmail();
 					break;
-				case "MAIL FROM":
-					mailFrom = message;
+					
+				case "MAIL TO":
+					email.addRecipient(message.split(" ")[2]);
 					break;
+					
 				case "MAIL SUBJECT":
-					mailSubject = message;
+					Matcher subjectMatcher = Pattern.compile("^MAIL SUBJECT \"(.*)\"").matcher(message);
+					subjectMatcher.find();
+					email.setSubject(subjectMatcher.group(1));
 					break;
+					
 				case "MAIL BODY":
-					mailBody = message;
+					Matcher bodyMatcher = Pattern.compile("^MAIL BODY \"(.*)\"").matcher(message);
+					bodyMatcher.find();
+					email.setSubject(bodyMatcher.group(1));
 					break;
+					
 				case "END SEND MAIL":
-					cp.send(dataProvider.ServerIncommingEmail(mailTo, mailFrom, mailSubject, mailBody));
+//					cp.send(dataProvider.ServerIncommingEmail(mailTo, mailFrom, mailSubject, mailBody));
 					break;
 					
 				default:
@@ -84,10 +93,10 @@ public class ClientCommunicator extends Thread {
 			return "GETNEWMAILS";
 		} else if (message.matches("^NEWCONT .*")) {
 			return "NEWCONT";
-		} else if(message.matches("(?i)^SEND MAIL [_a-z0-9-]+(\\.[_a-z0-9-]+)*@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,4})")) {
+		} else if(message.matches("^SEND MAIL .*")) {
 			return "SEND MAIL";
-		} else if(message.matches("(?i)^MAIL FROM [_a-z0-9-]+(\\.[_a-z0-9-]+)*@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,4})")) {
-			return "MAIL FROM";
+		} else if(message.matches("(?i)^MAIL TO [_a-z0-9-]+(\\.[_a-z0-9-]+)*@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,4})")) {
+			return "MAIL TO";
 		} else if(message.matches("(?i)^MAIL SUBJECT \".*\"")) {
 			return "MAIL SUBJECT";
 		} else if(message.matches("(?i)^MAIL BODY \".*\"")) {

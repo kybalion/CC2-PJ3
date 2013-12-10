@@ -3,9 +3,13 @@ package data;
 import data.DB;
 
 import java.util.Stack;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import entities.IncomingEmail;
 import entities.User;
+import communication.MailServer;
 import communication.ServerRequestor;
 
 public class DataProvider {
@@ -89,7 +93,7 @@ public class DataProvider {
     	return null;
     }
 	
-		public String ServerIncommingEmail(String mailTo, String mailFrom, String mailSubject, String mailBody) {
+	public String serverIncommingEmail(String mailTo, String mailFrom, String mailSubject, String mailBody) {
 		String[] to = mailTo.split(" ");
 		String[] from = mailFrom.split(" ");
 		Pattern patronSubject = Pattern.compile("^MAIL SUBJECT \"(.*)\"");
@@ -129,6 +133,58 @@ public class DataProvider {
 		return "SEND ERROR 201 "+to[2];
 	}
 	
+	public ConcurrentLinkedQueue<String> sendMail(IncomingEmail email) {
+		ConcurrentLinkedQueue<String> message = new ConcurrentLinkedQueue<String>();
+		
+		if (email.getBody() == null || email.getBody().equals("")) {
+			message.add("SEND ERROR 108");
+		} else if (email.getSubject() == null || email.getSubject().equals("")) {
+			message.add("SEND ERROR 107");
+		} else if (email.getRecipients() == null || email.getRecipients().isEmpty()) {
+			message.add("SEND ERROR 106");
+		} else {
+			for (String recipient : email.getRecipients()) {
+				String statusRecipient = checkContact(recipient);
+				if (statusRecipient.equals("OK NEWCONT")) {
+					email.setSentByID(connectedUser.getID());
+					if (existContact(recipient)) {
+						
+					} else {
+						
+					}
+				} else if (statusRecipient.startsWith("NEWCONT ERROR 110")) {
+					message.add("SEND ERROR 104 " + recipient);
+				} else if (statusRecipient.startsWith("NEWCONT ERROR 109")) {
+					message.add("SEND ERROR 105 " + recipient);
+				} 
+			}
+			message.add("OK SEND MAIL");
+		}
+		
+		return message;
+	}
+	
+	public void insertMail(IncomingEmail newEmail) {
+		try {
+			connection.connect();
+			connection.executeNonQuery(INSERT_MAIL + "('" + newEmail.getBody() + "','" + 
+															newEmail.getSubject() + "','" + 
+															newEmail.getSentBy() + "'," + 
+															newEmail.getRead() + ",'" + 
+															newEmail.getReceivedOn() + "'," + 
+															newEmail.getToUserID() + ")");
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println("Ocurrio un error al tratar de conectarse.");
+		} finally {
+			try {
+				connection.close();
+			} catch (UGDBDisconnectException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public boolean existContact(String contact) {
 		try {
 			connection.connect();
@@ -156,10 +212,12 @@ public class DataProvider {
 		String[] data = message.split(" ");
 		if (existContact(data[2])) {
 			return "OK NEWCONT";
-		} else if (data) {
+		} else if (ServerRequestor.checkUser(data[2])) {
 			return "OK NEWCONT";
+		} else if (!MailServer.serversIPTable.containsKey(data[2].split("@")[1])) {
+			return "NEWCONT ERROR 110 " + data[2];
 		}
-		return "NEWCONT ERROR " + data[2];
+		return "NEWCONT ERROR 109 " + data[2];
 	}
 	
 	public boolean insertNewUser(String username, String password) throws Exception

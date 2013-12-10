@@ -1,14 +1,19 @@
 package entities;
 
 import java.text.SimpleDateFormat;
+import java.util.Stack;
 
 public class IncomingEmail {
 	private String subject;
 	private String body;
 	private String sentBy;
+	private long sentByID;
 	private long toUserID;
 	private String receivedOn;
 	private byte read;
+	private Stack<String> recipients = new Stack<String>();
+	
+	public IncomingEmail() {}
 	
 	public IncomingEmail(String subject, String body, String sentBy, long toUserID) {
 		this.subject = subject;
@@ -64,5 +69,25 @@ public class IncomingEmail {
 	}
 	public String getReceivedOn() {
 		return receivedOn;
+	}
+
+	public Stack<String> getRecipients() {
+		return recipients;
+	}
+
+	public void setRecipients(Stack<String> recipients) {
+		this.recipients = recipients;
+	}
+	
+	public void addRecipient(String recipient) {
+		recipients.add(recipient);
+	}
+
+	public long getSentByID() {
+		return sentByID;
+	}
+
+	public void setSentByID(long sentByID) {
+		this.sentByID = sentByID;
 	}
 }
